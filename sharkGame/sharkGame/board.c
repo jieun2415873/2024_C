@@ -55,19 +55,7 @@ int board_initBoard(void)
 // ----- EX. 5 : shark ------------
 
     //coin allocation
-   for (i=0;i<N_COINPOS;i++) 
-    {
-    	while (board_coin[i] == 0)
-    	{
-    		int coin_position = rand() % MAX_COIN + 1;
-    		if (board_coin[coin_position] == 0)
-    		{
-    			board_coin[coin_position] = 1;
-    			break;
-			}
-		}
-    	
-	}
+   
     
     return N_COINPOS;
 }
@@ -77,20 +65,6 @@ int board_initBoard(void)
 // ----- EX. 5 : shark ------------
 int board_stepShark(void)
 {
-	int shark_step = rand() % MAX_SHARKSTEP + 1;
-	
-	if (shark_position >= 0 && shark_position < N_BOARD) {
-		board_status[shark_position] = BOARDSTATUS_OK;
-	}
-	
-	shark_position += shark_step;
-	if (shark_position >= N_BOARD) {
-		shark_position %= N_BOARD;
-	}
-	
-	board_status[shark_position] = BOARDSTATUS_NOK;
-	
-	return shark_position;
 
 }
 // ----- EX. 5 : shark ------------
