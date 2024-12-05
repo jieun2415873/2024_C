@@ -176,12 +176,12 @@ int getWinner(void)
 	
 	for (i=0;i<N_PLAYER;i++)
     {
-        player_position[i] = 0;
+		player_position[i] = 0;
         player_coin[i] = 0;
         player_status[i] = PLAYERSTATUS_LIVE;
         printf("Player %i's name: ", i);
+        fflush(stdout);
         scanf("%s", player_name[i]);
-        
     }
     
 // ----- EX. 4 : player ------------
@@ -193,7 +193,7 @@ int getWinner(void)
         int dum;
 
 // ----- EX. 4 : player ------------
-        if (player_status[turn] != PLAYERSTATUS_LIVE)
+	    if (player_status[turn] != PLAYERSTATUS_LIVE)
         {
             turn = (turn + 1)%N_PLAYER;
             continue;
@@ -223,12 +223,27 @@ int getWinner(void)
         
         if (player_position[turn] >= N_BOARD) {
         	player_position[turn] %= N_BOARD;
-        	
+        	printf("%s has moved past the board limit and returned to porition %d.\n", player_name[turn], player_position[turn]);
+		} else {
+			printf("%s moved to position %d.\n", player_name[turn], player_position[turn]);
 		}
    
         //step 2-4. coin
+        int coin = board_getBoardCoin(player_position[turn]);
+        if (coin > 0) {
+        	player_coin[turn] += coin;
+        	printf("%s acquired %d coin(s)! Total coins: %d\n", player_name[turn], player_position[turn]);
+		} else {
+			printf("%s found no coins at position %d.\n", player_name[turn], player_position[turn]);
+		}
        
         //step 2-5. end process
+       if (board_getBoardStatus(player_position[turn]) == BOARDSTATUS_NOK) {
+       	printf("%s has died at position %d!\n", player_name[turn], player_position[turn]);
+       	player_status[turn] = PLAYERSTATUS_DIE;
+	   }
+	   turn = (turn + 1)%N_PLAYER;
+       
        
 // ----- EX. 6 : game end ------------
     } while(game_end() == 0);
