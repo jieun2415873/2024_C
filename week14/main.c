@@ -121,15 +121,33 @@ void checkDie(void)
 // ----- EX. 6 : game end ------------
 int getAlivePlayer(void)
 {
-   
+	int i;
+	int cnt = 0;
+	for (i=0; i<N_PLAYER; i++)
+	{
+		if (player_status[i] == PLAYERSTATUS_LIVE)
+		    cnt++;
+	}
+	return cnt;
 }
 
 int getWinner(void)
 {
-    
+	int i;
+	int winner=-1;
+	int max_coin=-1;
+	
+	for (i=0; i<N_PLAYER; i++)
+	{
+		if (player_status[i] == PLAYERSTATUS_LIVE && player_coin[i] > max_coin) 
+		{
+			max_coin = player_coin[i];
+			winner = i;
+		}
+	}
+    return winner;
 }
 // ----- EX. 6 : game end ------------
-
 
 int main(int argc, const char * argv[]) {
     
@@ -191,11 +209,43 @@ int main(int argc, const char * argv[]) {
         
         
         //step 2-3. moving
+        player_position[turn] += dieResult;
+        
+        if (player_position[turn] >= N_BOARD) {
+        	player_position[turn] %= N_BOARD;
+        	printf("%s has moved past the board limit and returned to position %d.\n", player_name[turn], player_position[turn]);
+		} else {
+			printf("%s moved to position %d.\n", player_name[turn], player_position[turn]);
+		}
    
         //step 2-4. coin
-    
+        int coin = board_getBoardCoin(player_position[turn]);
+        if (coin > 0) {
+        	player_coin[turn] += coin;
+        	printf("%s acquired %d coin(s)! Total coins: %d\n", player_name[turn],coin, player_coin[turn]);
+		} else {
+			printf("%s found no coins at position %d.\n", player_name[turn], player_position[turn]);
+		}
         
         //step 2-5. end process
+        if (board_getBoardStatus(player_position[turn]) == BOARDSTATUS_NOK) {
+        	printf("%s has died at position %d!\n", player_name[turn], player_position[turn]);
+        	player_status[turn] = PLAYERSTATUS_DIE;
+		}
+        if (player_position[turn] == N_BOARD - 1) {
+        	printf("%s has reached the end of the board and completed the game!\n", player_name[turn]);
+        	player_status[turn] = PLAYERSTATUS_END;
+		}
+		if (turn == N_PLAYER - 1) {
+			int shark_pos = board_stepShark();
+			printf("Shark moved to %d.\n", shark_pos);
+			checkDie();
+		}
+		if (getAlivePlayer() <= 1) {
+			break;
+		}
+		
+		turn = (turn + 1) % N_PLAYER;
     
 // ----- EX. 6 : game end ------------
     } while(game_end() == 0);
